@@ -8,19 +8,29 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
-
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
+    const hellthreadRoots = new Set<string>(['bafyreigxvsmbhdenvzaklcfnovbsjc542cu5pjmpqyyc64mdtqwsyimlvi'])
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        //Like a lot of custom feeds, let's filter out Hellthread posts!
+        let reply;
+        if (create?.record?.hasOwnProperty('reply')) {
+          ({record: {reply}} = create);
+        }
+        let isHellthread = hellthreadRoots.has(reply?.root?.cid)
+
+        //Build hashtag array from a post text for the check
+        let hashtags: any[] = []
+        create?.record?.text?.toLowerCase()
+          ?.match(/#[^\s#\.\;]*/gmi)
+          ?.map((hashtag) => {
+            hashtags.push(hashtag)
+          })
+
+        //Check for Reylo specific hashtag
+        return hashtags.includes('#reylo') && !isHellthread 
+        //OLD RETURN LOGIC //return create.record.text.toLowerCase().includes('#reylo')
       })
       .map((create) => {
         // map alf-related posts to a db row
