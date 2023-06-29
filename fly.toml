@@ -22,4 +22,4 @@ primary_region = "phx"
 [[services.ports]]
     handlers = ["tls","http"]
     port = 443
-    
+     
