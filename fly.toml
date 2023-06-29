@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for skylorey-vanilla-fly on 2023-06-27T20:48:40-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "skylorey-vanilla-fly"
+primary_region = "phx"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true 
+
+[[services.ports]]
+    handlers = ["tls","http"]
+    port = 443
+    
