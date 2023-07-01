@@ -1,14 +1,10 @@
-# fly.toml app configuration file generated for skylorey on 2023-06-30T13:50:09-07:00
+# fly.toml app configuration file generated for skylorey-vanilla-fly on 2023-06-27T20:48:40-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = "skylorey"
 primary_region = "phx"
-
-[[mounts]]
-  source = "data"
-  destination = "/data"
 
 [http_service]
   internal_port = 3000
