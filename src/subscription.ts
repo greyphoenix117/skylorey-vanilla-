@@ -40,6 +40,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           replyParent: create.record?.reply?.parent.uri ?? null,
           replyRoot: create.record?.reply?.root.uri ?? null,
           indexedAt: new Date().toISOString(),
+          createdAt: create.record?.createdAt,
         }
       })
 

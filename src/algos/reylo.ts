@@ -9,7 +9,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
-    .orderBy('indexedAt', 'desc')
+    .orderBy('createdAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)
 
