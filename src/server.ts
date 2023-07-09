@@ -9,7 +9,6 @@ import { createDb, Database, migrateToLatest } from './db'
 import { FirehoseSubscription } from './subscription'
 import { AppContext, Config } from './config'
 import wellKnown from './well-known'
-import {addHistoricalPosts} from './methods/add-historical'
 
 export class FeedGenerator {
   public app: express.Application
@@ -34,11 +33,6 @@ export class FeedGenerator {
     const app = express()
 
     const db = createDb(cfg.dbLocation)
-
-    //Handle re-adding the historical records to the database when it gets refreshed upon app restart
-    //  This is a stop-gap for now until I can figure out how to handle a more stable, separate
-    //  database deployment from the app with data backup options in case of a machine restart/refresh.
-    //addHistoricalPosts(db)
 
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
 
