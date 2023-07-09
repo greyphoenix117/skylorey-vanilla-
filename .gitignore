@@ -134,6 +134,6 @@ sqlite.db
 sqlite.db.example
 
 #Config files for fly.io
-dockerfile
+Dockerfile
 fly.toml
 .dockerignore
