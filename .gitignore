@@ -131,3 +131,9 @@ dist
 
 # local database
 sqlite.db
+sqlite.db.example
+
+#Config files for fly.io
+dockerfile
+fly.toml
+.dockerignore

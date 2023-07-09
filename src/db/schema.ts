@@ -6,11 +6,16 @@ export type DatabaseSchema = {
 export type Post = {
   uri: string
   cid: string
-  replyParent: string | null
-  replyRoot: string | null
-  indexedAt: string
-  createdAt: string
-  cidParent: string | null
+  rkey: string
+  replyparent: string | null
+  replyroot: string | null
+  did: string | null
+  indexedat: string
+  createdat: string
+  flagdelete: boolean
+  flaghide: boolean
+  tagglobal: string | null
+  taglocal: string | null
 }
 
 export type SubState = {

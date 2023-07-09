@@ -41,9 +41,10 @@ FROM base
 COPY --from=build /app /app
 
 # Setup sqlite3 on a separate volume
-RUN mkdir -p /data
-VOLUME /data
-ENV DATABASE_URL="file:///data/sqlite.db"
+#RUN mkdir -p /data
+#VOLUME /data
+#ENV DATABASE_URL="file:///data/sqlite.db"
+#ENV DATABASE_URL="postgres://skylorey:8NMTACHkazHD9e7@skylorey-db.flycast:5432/skylorey?sslmode=disable"
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000

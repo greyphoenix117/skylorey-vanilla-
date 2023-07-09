@@ -32,12 +32,13 @@ export class FeedGenerator {
 
   static create(cfg: Config) {
     const app = express()
-    const db = createDb(cfg.sqliteLocation)
+
+    const db = createDb(cfg.dbLocation)
 
     //Handle re-adding the historical records to the database when it gets refreshed upon app restart
     //  This is a stop-gap for now until I can figure out how to handle a more stable, separate
     //  database deployment from the app with data backup options in case of a machine restart/refresh.
-    addHistoricalPosts(db)
+    //addHistoricalPosts(db)
 
     const firehose = new FirehoseSubscription(db, cfg.subscriptionEndpoint)
 
@@ -69,9 +70,8 @@ export class FeedGenerator {
   }
 
   async start(): Promise<http.Server> {
-    await migrateToLatest(this.db)
+    //await migrateToLatest(this.db)
     this.firehose.run(this.cfg.subscriptionReconnectDelay)
-    //throw new Error(this.cfg.port.toString()+process.env.FEEDGEN_LISTENHOST)
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
     return this.server

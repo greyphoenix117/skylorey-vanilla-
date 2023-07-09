@@ -1,3 +1,4 @@
+import dotenv from 'dotenv'
 import {
   OutputSchema as RepoEvent,
   isCommit,
@@ -8,7 +9,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
-    const hellthreadRoots = new Set<string>(['bafyreigxvsmbhdenvzaklcfnovbsjc542cu5pjmpqyyc64mdtqwsyimlvi'])
+    const hellthreadRoots = new Set<string>([`${process.env.HELLTHREAD_ROOT}`])
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
@@ -28,19 +29,50 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
             hashtags.push(hashtag)
           })
 
-        //Check for Reylo specific hashtag
-        return hashtags.includes('#reylo') && !isHellthread 
-        //OLD RETURN LOGIC //return create.record.text.toLowerCase().includes('#reylo')
+        //Check for Reylo specific hashtags
+        return (hashtags.includes(`${process.env.GLOBAL_TAG}`) ||
+                hashtags.includes(`${process.env.LOCAL_TAG_01}`) ||
+                hashtags.includes(`${process.env.LOCAL_TAG_02}`)) && 
+                !isHellthread 
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        //vars for hashtag check
+        let globalTag = ''
+        let localTag = ''
+
+        //Logic to determine the tags for the post
+        let hashtags: any[] = []
+        create?.record?.text?.toLowerCase()
+          ?.match(/#[^\s#\.\;]*/gmi)
+          ?.map((hashtag) => {
+            hashtags.push(hashtag)
+          })
+        
+        if(hashtags.includes(`${process.env.GLOBAL_TAG}`)){
+          globalTag = process.env.GLOBAL_TAG ?? ''
+        } else if (hashtags.includes(`${process.env.LOCAL_TAG_01}`)){
+          localTag = process.env.LOCAL_TAG_01 ?? ''
+        } else if (hashtags.includes(`${process.env.LOCAL_TAG_02}`)){
+          localTag = process.env.LOCAL_TAG_02 ?? ''
+        } else {
+          //default the global tag to #reylo
+          globalTag = '#reylo'
+        }
+
+        // map Reylo posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
-          replyParent: create.record?.reply?.parent.uri ?? null,
-          replyRoot: create.record?.reply?.root.uri ?? null,
-          indexedAt: new Date().toISOString(),
-          createdAt: create.record?.createdAt,
+          rkey: create?.uri.split("post/").slice(-1)[0] ?? null,
+          replyparent: create.record?.reply?.parent.uri ?? null,
+          replyroot: create.record?.reply?.root.uri ?? null,
+          did: create.author ?? null,
+          indexedat: new Date().toISOString(),
+          createdat: create.record?.createdAt,
+          flagdelete: false,
+          flaghide: false,
+          tagglobal: globalTag ?? null,
+          taglocal: localTag ?? null,
         }
       })
 

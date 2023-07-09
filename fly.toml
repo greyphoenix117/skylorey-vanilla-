@@ -6,9 +6,9 @@
 app = "skylorey"
 primary_region = "phx"
 
-[[mounts]]
-  source = "data"
-  destination = "/data"
+#[[mounts]]
+#  source = "data"
+#  destination = "/data"
 
 [http_service]
   internal_port = 3000

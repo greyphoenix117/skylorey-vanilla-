@@ -7,17 +7,22 @@ import { RecordNotFoundError } from '@atproto/api/dist/client/types/com/atproto/
 let fetchCount = 0;
 let SAFE_MODE = true;
 const MAX_FETCHES = 7;
-let rkey_prime = 'initial prime key'
 
 export async function addHistoricalPosts(db) {
   let url = process.env.SEARCH_URL ?? ''
   let dbPosts: {
     uri: string
     cid: string
-    replyParent: string | null
-    replyRoot: string | null
-    indexedAt: string
-    createdAt: string
+    rkey: string | null
+    replyparent: string | null
+    replyroot: string | null
+    did: string | null
+    indexedat: string
+    createdat: string
+    flagdelete: boolean
+    flaghide: boolean
+    tagglobal: string | null
+    taglocal: string | null
   }[] = []
 
   if (url) {
@@ -38,7 +43,9 @@ export async function addHistoricalPosts(db) {
               hashtags.push(hashtag)
             })
 
-          if (hashtags.includes('#reylo')) {
+          if (hashtags.includes(process.env.GLOBAL_TAG) || 
+              hashtags.includes(process.env.LOCAL_TAG_01) || 
+              hashtags.includes(process.env.LOCAL_TAG_02)) {
             //Check if the post is in Hellthread
             let did = result?.user?.did
             let rkey = result?.tid.split("/").slice(-1)[0]
@@ -48,16 +55,36 @@ export async function addHistoricalPosts(db) {
 
             const hellthreadRoots = new Set<string>([`${process.env.HELLTHREAD_ROOT}`])
             let isHellthread = hellthreadRoots.has(posting?.value?.reply?.root?.cid)
-            if (!isHellthread && (rkey != '3jzsrjbjti22y' && rkey != '3jzsrjq4lyr2v' && rkey != '3jzrxw7vwqp2w' && rkey != '3jzsrfxgqve2v')) {
-              //It's all good; no Hellthread, and has reylo hashtag
-              //  add to databaseposts
+            if (!isHellthread && (did != process.env.BSKY_HANDLE)) {
+              //It's all good; no Hellthread, and has a reylo hashtag
+              //Set tag vars
+              let globalTag = ''
+              let localTag = ''
+              if(hashtags.includes(`${process.env.GLOBAL_TAG}`)){
+                globalTag = process.env.GLOBAL_TAG ?? ''
+              } else if (hashtags.includes(`${process.env.LOCAL_TAG_01}`)){
+                localTag = process.env.LOCAL_TAG_01 ?? ''
+              } else if (hashtags.includes(`${process.env.LOCAL_TAG_02}`)){
+                localTag = process.env.LOCAL_TAG_02 ?? ''
+              } else {
+                //default the global tag to #reylo
+                globalTag = '#reylo'
+              }
+
+              //Add to database
               dbPosts.push({
                 uri: `at://${did}/${result?.tid}`,
                 cid: result?.cid,
-                replyParent: posting?.value?.reply?.parent?.uri ?? null,
-                replyRoot: posting?.value?.reply?.root?.uri ?? null,
-                indexedAt: new Date().toISOString(),
-                createdAt: result?.post?.createdAt,
+                rkey: rkey ?? null,
+                replyparent: posting?.value?.reply?.parent?.uri ?? null,
+                replyroot: posting?.value?.reply?.root?.uri ?? null,
+                did: did ?? null,
+                indexedat: new Date().toISOString(),
+                createdat: result?.post?.createdAt,
+                flagdelete: false,
+                flaghide: false,
+                tagglobal: globalTag ?? null,
+                taglocal: localTag ?? null,
               })
             }
           }
