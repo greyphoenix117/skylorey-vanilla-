@@ -24,7 +24,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         //Build hashtag array from a post text for the check
         let hashtags: any[] = []
         create?.record?.text?.toLowerCase()
-          ?.match(/#[^\s#\.\;]*/gmi)
+          ?.match(/#[^\s#\.\;\?\!\:]*/gmi)
           ?.map((hashtag) => {
             hashtags.push(hashtag)
           })
@@ -43,7 +43,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
         //Logic to determine the tags for the post
         let hashtags: any[] = []
         create?.record?.text?.toLowerCase()
-          ?.match(/#[^\s#\.\;]*/gmi)
+          ?.match(/#[^\s#\.\;\?\!\:]*/gmi)
           ?.map((hashtag) => {
             hashtags.push(hashtag)
           })

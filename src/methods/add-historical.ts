@@ -38,7 +38,7 @@ export async function addHistoricalPosts(db) {
           //  should be kept or not
           let hashtags: any[] = []
           result?.post?.text?.toLowerCase()
-            ?.match(/#[^\s#\.\;]*/gmi)
+            ?.match(/#[^\s#\.\;\?\!\:]*/gmi)
             ?.map((hashtag) => {
               hashtags.push(hashtag)
             })
